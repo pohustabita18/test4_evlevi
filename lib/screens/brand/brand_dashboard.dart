@@ -10,24 +10,20 @@ class BrandDashboard extends StatefulWidget {
 
 class _BrandDashboardState extends State<BrandDashboard> {
   int _currentIndex = 0;
+
+  // Am revenit la cele 2 tab-uri inițiale (fără pagina globală de mesaje)
   final List<Widget> _tabs = [ManageCampaignsTab(), BrandProfileTab()];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('NetCreator - Brand'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () => AuthService().signOut(),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text('NetCreato - Brand')),
       body: _tabs[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
+        selectedItemColor: Colors.purple[900],
+        unselectedItemColor: Colors.grey[600],
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.business_center),

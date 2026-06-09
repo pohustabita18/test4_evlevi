@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'services/auth_service.dart';
 import 'screens/auth/login_screen.dart';
@@ -7,21 +7,30 @@ import 'screens/brand/brand_dashboard.dart';
 import 'screens/creator/creator_dashboard.dart';
 import 'screens/admin/admin_dashboard.dart';
 
+// Notificator global pentru starea Dark Mode
+final ValueNotifier<bool> isDarkModeNotifier = ValueNotifier<bool>(false);
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Aici am adăugat configurația ta web exactă din consolă
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: "AIzaSyB-BhIIk60e_vY_uTUke76t678y_O5FLNU",
-      authDomain: "flutter-test4-9849c.firebaseapp.com",
-      projectId: "flutter-test4-9849c",
-      storageBucket: "flutter-test4-9849c.firebasestorage.app",
-      messagingSenderId: "141870563500",
-      appId: "1:141870563500:web:2978a8d837a3b545ca9f09",
-      measurementId: "G-H96N4JBWEN",
-    ),
-  );
+  // 🔴 FIX: Împachetăm inițializarea în try-catch pentru a opri eroarea de web_entrypoint
+  try {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey:
+            "AIzaSyB-BhIIk60e_vY_uTuKe76t678y_O5FLNU", // Am asigurat potrivirea caracterelor case-sensitive
+        authDomain: "flutter-test4-9849c.firebaseapp.com",
+        projectId: "flutter-test4-9849c",
+        storageBucket: "flutter-test4-9849c.firebasestorage.app",
+        messagingSenderId: "141870563500",
+        appId: "1:141870563500:web:2978a8d837a3b545ca9f09",
+        measurementId: "G-H96N4JBWEN",
+      ),
+    );
+    print("✅ Firebase s-a inițializat cu succes!");
+  } catch (e) {
+    print("🔴 AVERTISMENT FIREBASE (Aplicația pornește oricum): $e");
+  }
 
   runApp(NetCreatorApp());
 }
@@ -29,15 +38,25 @@ void main() async {
 class NetCreatorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Corectat din BuildConlext
-    return MaterialApp(
-      title: 'NetCreator', // Corectat din lille
-      theme: ThemeData(
-        primarySwatch: Colors.indigo,
-        scaffoldBackgroundColor: Colors.white,
-      ),
-      home: AuthWrapper(),
-      debugShowCheckedModeBanner: false,
+    return ValueListenableBuilder<bool>(
+      valueListenable: isDarkModeNotifier,
+      builder: (context, isDark, child) {
+        return MaterialApp(
+          title: 'NetCreator',
+          themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+          theme: ThemeData(
+            primarySwatch: Colors.indigo,
+            scaffoldBackgroundColor: Colors.white,
+            brightness: Brightness.light,
+          ),
+          darkTheme: ThemeData(
+            primarySwatch: Colors.indigo,
+            brightness: Brightness.dark,
+          ),
+          home: AuthWrapper(),
+          debugShowCheckedModeBanner: false,
+        );
+      },
     );
   }
 }

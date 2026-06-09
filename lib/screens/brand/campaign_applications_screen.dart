@@ -25,9 +25,7 @@ class CampaignApplicationsScreen extends StatelessWidget {
           var apps = snapshot.data!.docs;
 
           if (apps.isEmpty)
-            return Center(
-              child: Text('Nu există aplicații pentru această campanie.'),
-            );
+            return Center(child: Text('Nu există aplicații depuse.'));
 
           return ListView.builder(
             itemCount: apps.length,
@@ -36,8 +34,8 @@ class CampaignApplicationsScreen extends StatelessWidget {
               String appId = apps[i].id;
               String creatorId = appData['creatorId'] ?? '';
               String status = appData['status'] ?? 'pending';
+              String chatId = "${campaignId}_$creatorId"; // ID Chat unic
 
-              // Folosim FutureBuilder pentru a lua numele și detaliile creatorului din profilul său
               return FutureBuilder<DocumentSnapshot>(
                 future: _dbService.getCreatorProfile(creatorId),
                 builder: (context, creatorSnapshot) {
@@ -69,7 +67,7 @@ class CampaignApplicationsScreen extends StatelessWidget {
                           ),
                           SizedBox(height: 5),
                           Text(
-                            'Status curent: ${status.toUpperCase()}',
+                            'Status: ${status.toUpperCase()}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: status == 'accepted'
@@ -83,21 +81,51 @@ class CampaignApplicationsScreen extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              // Buton Chat direct
-                              TextButton.icon(
-                                icon: Icon(Icons.chat, color: Colors.indigo),
-                                label: Text('Chat'),
-                                onPressed: () {
-                                  // Generăm un ID unic pentru chat format din ID campanie + ID creator
-                                  String chatId = "${campaignId}_$creatorId";
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => ChatScreen(
-                                        chatId: chatId,
-                                        recipientName: creatorName,
-                                      ),
+                              // 🔴 NOU: Urmărim notificările de mesaje noi venite de la CREATOR pentru BRAND
+                              StreamBuilder<DocumentSnapshot>(
+                                stream: _dbService.getChatDocument(chatId),
+                                builder: (context, chatSnapshot) {
+                                  bool hasUnread = false;
+                                  if (chatSnapshot.hasData &&
+                                      chatSnapshot.data!.exists) {
+                                    var chatData =
+                                        chatSnapshot.data!.data()
+                                            as Map<String, dynamic>;
+                                    hasUnread =
+                                        chatData['unreadByBrand'] ??
+                                        false; // Citire pt Brand
+                                  }
+
+                                  return ElevatedButton.icon(
+                                    icon: Icon(
+                                      hasUnread
+                                          ? Icons.mark_chat_unread
+                                          : Icons.chat,
                                     ),
+                                    label: Text(
+                                      hasUnread ? 'Mesaj nou! 🔴' : 'Chat',
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: hasUnread
+                                          ? Colors.red[100]
+                                          : Colors.grey[200],
+                                      foregroundColor: hasUnread
+                                          ? Colors.red[900]
+                                          : Colors.indigo,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => ChatScreen(
+                                            chatId: chatId,
+                                            recipientName: creatorName,
+                                            senderRole:
+                                                "Brand", // Trimitem rolul de Brand
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   );
                                 },
                               ),

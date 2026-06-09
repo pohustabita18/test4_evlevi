@@ -1,8 +1,11 @@
-import 'dart:io';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../main.dart'; // 🔴 NOU: Importăm notificatorul de Dark Mode
+import '../../services/auth_service.dart'; // 🔴 NOU: Pentru deconectare
 import '../../services/database_service.dart';
 import '../../widgets/custom_input.dart';
 
@@ -21,8 +24,9 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
 
   final DatabaseService _dbService = DatabaseService();
   final String uid = FirebaseAuth.instance.currentUser!.uid;
-  File? _image;
-  String? _logoUrl;
+
+  Uint8List? _logoBytes;
+  String? _logoBase64;
   bool _isLoading = false;
 
   @override
@@ -40,41 +44,57 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
       _industryController.text = data['industry'] ?? '';
       _websiteController.text = data['website'] ?? '';
       _budgetController.text = (data['budget'] ?? 0).toString();
-      setState(() => _logoUrl = data['logoUrl']);
+      setState(() {
+        _logoBase64 = data['logoBase64'];
+      });
     }
   }
 
   void _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-    );
-    if (pickedFile != null) setState(() => _image = File(pickedFile.path));
+    try {
+      final pickedFile = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+      );
+      if (pickedFile != null) {
+        var bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _logoBytes = bytes;
+        });
+      }
+    } catch (e) {
+      print("Eroare la selectare logo: $e");
+    }
   }
 
   void _saveProfile() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
       try {
-        if (_image != null) {
-          _logoUrl = await _dbService.uploadImage('logos/$uid.jpg', _image!);
+        if (_logoBytes != null) {
+          _logoBase64 = base64Encode(_logoBytes!);
         }
+
         await _dbService.saveBrandProfile(uid, {
           'companyName': _nameController.text,
           'description': _descController.text,
           'industry': _industryController.text,
           'website': _websiteController.text,
           'budget': double.tryParse(_budgetController.text) ?? 0.0,
-          'logoUrl': _logoUrl,
+          'logoBase64': _logoBase64,
         });
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Profil salvat!'),
+          const SnackBar(
+            content: Text('Profil brand salvat cu succes!'),
             backgroundColor: Colors.green,
           ),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Eroare: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Eroare la salvare: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       } finally {
         setState(() => _isLoading = false);
@@ -91,40 +111,102 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
           key: _formKey,
           child: ListView(
             children: [
-              GestureDetector(
-                onPanEnd: (details) => _pickImage(),
-                onTap: _pickImage,
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: _image != null
-                      ? FileImage(_image!)
-                      : (_logoUrl != null ? NetworkImage(_logoUrl!) : null)
-                            as ImageProvider?,
-                  child: _image == null && _logoUrl == null
-                      ? Icon(Icons.add_a_photo, size: 40)
-                      : null,
+              Center(
+                child: GestureDetector(
+                  onTap: _pickImage,
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.purple[50],
+                    backgroundImage: _logoBytes != null
+                        ? MemoryImage(_logoBytes!)
+                        : (_logoBase64 != null
+                              ? MemoryImage(base64Decode(_logoBase64!))
+                              : null),
+                    child: _logoBytes == null && _logoBase64 == null
+                        ? Icon(
+                            Icons.add_a_photo,
+                            size: 40,
+                            color: Colors.purple[900],
+                          )
+                        : null,
+                  ),
                 ),
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 20),
               CustomInput(label: 'Nume Companie', controller: _nameController),
-              CustomInput(label: 'Descriere', controller: _descController),
+              CustomInput(
+                label: 'Descriere Brand',
+                controller: _descController,
+              ),
               CustomInput(
                 label: 'Domeniu de Activitate',
                 controller: _industryController,
               ),
               CustomInput(label: 'Website', controller: _websiteController),
               CustomInput(
-                label: 'Buget Disponibil (€)',
+                label: 'Buget Disponibil (lei)',
                 controller: _budgetController,
                 keyboardType: TextInputType.number,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _isLoading
-                  ? Center(child: CircularProgressIndicator())
+                  ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
                       onPressed: _saveProfile,
-                      child: Text('Salvează Profilul'),
+                      child: const Text(
+                        'Salvează Profilul',
+                        style: TextStyle(fontSize: 16),
+                      ),
                     ),
+
+              // 🔴 NOU: SECȚIUNE SETĂRI ȘI LOGOUT INTEGRATĂ ÎN PROFIL
+              const Padding(
+                padding: EdgeInsets.only(top: 30.0),
+                child: Divider(),
+              ),
+              const Text(
+                'Setări aplicație',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+
+              // Comutator pentru Dark Mode
+              ValueListenableBuilder<bool>(
+                valueListenable: isDarkModeNotifier,
+                builder: (context, isDark, child) {
+                  return SwitchListTile(
+                    title: const Text('Mod Întunecat (Dark Mode)'),
+                    secondary: const Icon(Icons.dark_mode),
+                    value: isDark,
+                    onChanged: (val) {
+                      isDarkModeNotifier.value = val;
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 15),
+
+              // Butonul de Logout (Deconectare)
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red[700],
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                icon: const Icon(Icons.logout),
+                label: const Text(
+                  'Deconectare (Logout)',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                onPressed: () => AuthService().signOut(),
+              ),
+              const SizedBox(height: 30),
             ],
           ),
         ),

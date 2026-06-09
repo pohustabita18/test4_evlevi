@@ -3,37 +3,61 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../services/database_service.dart';
 
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends StatefulWidget {
   final String chatId;
   final String recipientName;
+  final String senderRole; // 🔴 NOU: Primește "Brand" sau "Creator"
+
+  ChatScreen({
+    required this.chatId,
+    required this.recipientName,
+    required this.senderRole,
+  });
+
+  @override
+  _ChatScreenState createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
   final DatabaseService _dbService = DatabaseService();
   final _messageController = TextEditingController();
   final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
-  ChatScreen({required this.chatId, required this.recipientName});
+  @override
+  void initState() {
+    super.initState();
+    // 🔴 NOU: Când deschidem chat-ul, marcăm mesajele ca fiind CITITE pentru rolul nostru
+    _dbService.markChatAsRead(widget.chatId, widget.senderRole);
+  }
 
   void _send() {
-    _dbService.sendMessage(chatId, currentUserId, _messageController.text);
+    if (_messageController.text.trim().isEmpty) return;
+    // Trimitem și rolul pentru ca baza de date să știe pe cine să notifice
+    _dbService.sendMessage(
+      widget.chatId,
+      currentUserId,
+      _messageController.text,
+      widget.senderRole,
+    );
     _messageController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(recipientName)),
+      appBar: AppBar(title: Text(widget.recipientName)),
       body: Column(
         children: [
-          // Zona de mesaje în timp real
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: _dbService.getMessages(chatId),
+              stream: _dbService.getMessages(widget.chatId),
               builder: (context, snapshot) {
                 if (!snapshot.hasData)
                   return Center(child: CircularProgressIndicator());
                 var messages = snapshot.data!.docs;
 
                 return ListView.builder(
-                  reverse: true, // Mesajele noi apar jos
+                  reverse: true,
                   itemCount: messages.length,
                   itemBuilder: (context, i) {
                     var msgData = messages[i].data() as Map<String, dynamic>;
@@ -53,17 +77,8 @@ class ChatScreen extends StatelessWidget {
                           horizontal: 14,
                         ),
                         decoration: BoxDecoration(
-                          color: isMe ? Colors.indigo : Colors.grey[300],
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            topRight: Radius.circular(12),
-                            bottomLeft: isMe
-                                ? Radius.circular(12)
-                                : Radius.circular(0),
-                            bottomRight: isMe
-                                ? Radius.circular(0)
-                                : Radius.circular(12),
-                          ),
+                          color: isMe ? Colors.purple[800] : Colors.grey[300],
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           msgData['text'] ?? '',
@@ -79,7 +94,6 @@ class ChatScreen extends StatelessWidget {
               },
             ),
           ),
-          // Câmpul de trimis mesaj text
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -97,7 +111,7 @@ class ChatScreen extends StatelessWidget {
                 ),
                 SizedBox(width: 8),
                 IconButton(
-                  icon: Icon(Icons.send, color: Colors.indigo),
+                  icon: Icon(Icons.send, color: Colors.purple[800]),
                   onPressed: _send,
                 ),
               ],
