@@ -145,15 +145,23 @@ class DatabaseService {
   // (Removed duplicate simple sendMessage — consolidated implementation lower in file)
 
   // Șterge notificarea de mesaj necitit când utilizatorul deschide chatul
+  // 🔴 ÎNLOCUIEȘTE COMPLET METODA MARKCHATASREAD CU ACEASTA ÎN DATABASE_SERVICE.DART:
+
   Future<void> markChatAsRead(String chatId, String role) async {
-    if (role == 'Brand') {
-      await _db.collection('chats').doc(chatId).update({
-        'unreadByBrand': false,
-      });
-    } else if (role == 'Creator') {
-      await _db.collection('chats').doc(chatId).update({
-        'unreadByCreator': false,
-      });
+    try {
+      if (role == 'Brand') {
+        // 🔴 FIX: Schimbat din .update() în .set() cu merge: true pentru a preveni crash-ul
+        await _db.collection('chats').doc(chatId).set({
+          'unreadByBrand': false,
+        }, SetOptions(merge: true));
+      } else if (role == 'Creator') {
+        // 🔴 FIX: Schimbat din .update() în .set() cu merge: true pentru a preveni crash-ul
+        await _db.collection('chats').doc(chatId).set({
+          'unreadByCreator': false,
+        }, SetOptions(merge: true));
+      }
+    } catch (e) {
+      print("Avertisment la marcarea chatului ca citit: $e");
     }
   }
 

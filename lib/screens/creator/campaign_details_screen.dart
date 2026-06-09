@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../services/database_service.dart';
-import '../shared/chat_screen.dart'; // Am scos importul pentru custom_input deoarece nu mai avem nevoie de el
+import '../shared/chat_screen.dart';
 
 class CampaignDetailsScreen extends StatelessWidget {
   final String campaignId;
@@ -20,10 +20,11 @@ class CampaignDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     List<dynamic> imgs = campaignData['imageUrls'] ?? [];
     bool hasImage = imgs.isNotEmpty;
+    String brandId = campaignData['brandId'] ?? '';
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detalii campanie'),
+        title: const Text('Detalii campanie'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -49,7 +50,7 @@ class CampaignDetailsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Imaginea mare de sus (Header)
+                      // Imaginea mare de Header
                       Container(
                         width: double.infinity,
                         height: 230,
@@ -79,14 +80,14 @@ class CampaignDetailsScreen extends StatelessWidget {
                                 Expanded(
                                   child: Text(
                                     campaignData['title'] ?? 'Campanie',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
                                 Container(
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                     horizontal: 12,
                                     vertical: 6,
                                   ),
@@ -96,7 +97,7 @@ class CampaignDetailsScreen extends StatelessWidget {
                                   ),
                                   child: Text(
                                     '${campaignData['budget']} RON',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -105,26 +106,63 @@ class CampaignDetailsScreen extends StatelessWidget {
                               ],
                             ),
 
-                            SizedBox(height: 6),
+                            const SizedBox(height: 6),
+
+                            // 🔴 NOU: Afișare Nume Brand dinamic sub titlu (Macheta dreapta)
+                            FutureBuilder<DocumentSnapshot>(
+                              future: _dbService.getBrandProfile(brandId),
+                              builder: (context, brandSnapshot) {
+                                String brandName = "Se încarcă brandul...";
+                                if (brandSnapshot.hasData &&
+                                    brandSnapshot.data!.exists) {
+                                  var bData =
+                                      brandSnapshot.data!.data()
+                                          as Map<String, dynamic>;
+                                  brandName =
+                                      bData['companyName'] ??
+                                      'Brand Nespecificat';
+                                }
+                                return Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.store,
+                                      size: 18,
+                                      color: Colors.black87,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      brandName,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.black87,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+
+                            const SizedBox(height: 4),
                             Text(
                               'Produs vizat: ${campaignData['productCategory'] ?? 'Nespecificat'}',
                               style: TextStyle(
                                 color: Colors.grey[600],
-                                fontSize: 14,
+                                fontSize: 13,
                               ),
                             ),
 
-                            Divider(height: 30),
+                            const Divider(height: 30),
 
                             // Secțiunea Cerințe
-                            Text(
+                            const Text(
                               'Cerințe',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
 
                             _buildRequirementRow(
                               Icons.people_alt_outlined,
@@ -143,28 +181,28 @@ class CampaignDetailsScreen extends StatelessWidget {
                               'Nișa: ${campaignData['category'] ?? 'Fashion / Lifestyle'}',
                             ),
 
-                            Divider(height: 30),
+                            const Divider(height: 30),
 
                             // Secțiunea Descriere
-                            Text(
+                            const Text(
                               'Descriere',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Text(
                               campaignData['description'] ??
                                   'Nu există o descriere adăugată.',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 15,
                                 color: Colors.black87,
                                 height: 1.4,
                               ),
                             ),
 
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             Text(
                               'Termen limită aplicație: ${campaignData['deadline'] ?? '-'}',
                               style: TextStyle(
@@ -181,10 +219,10 @@ class CampaignDetailsScreen extends StatelessWidget {
                 ),
               ),
 
-              // Bara de acțiuni (Butonul de jos)
+              // Bara de acțiuni de jos
               Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
+                padding: const EdgeInsets.all(16),
+                decoration: const BoxDecoration(
                   color: Colors.white,
                   boxShadow: [
                     BoxShadow(
@@ -201,26 +239,25 @@ class CampaignDetailsScreen extends StatelessWidget {
                           ? ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.purple[900],
-                                padding: EdgeInsets.symmetric(vertical: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              // 🔴 MODIFICAT: Trimite direct datele în Firestore la click, fără ferestre secundare
                               onPressed: () async {
                                 try {
                                   await _dbService.applyToCampaign({
                                     'campaignId': campaignId,
                                     'creatorId': currentUserId,
-                                    'message':
-                                        '', // Lăsăm mesajul gol deoarece am eliminat căsuța text
+                                    'message': '',
                                     'status': 'pending',
-                                    'createdAt':
-                                        Timestamp.now(), // Timp stabil pentru a evita bug-ul de dispariție
+                                    'createdAt': Timestamp.now(),
                                   });
 
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
+                                    const SnackBar(
                                       content: Text(
                                         'Te-ai înscris cu succes în campanie! 🎉',
                                       ),
@@ -236,7 +273,7 @@ class CampaignDetailsScreen extends StatelessWidget {
                                   );
                                 }
                               },
-                              child: Text(
+                              child: const Text(
                                 'Aplica la Campanie',
                                 style: TextStyle(
                                   fontSize: 16,
@@ -247,7 +284,7 @@ class CampaignDetailsScreen extends StatelessWidget {
                             )
                           : _buildStatusWidget(appStatus),
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     IconButton(
                       icon: Icon(
                         Icons.chat_bubble_outline,
@@ -258,7 +295,7 @@ class CampaignDetailsScreen extends StatelessWidget {
                         side: BorderSide(
                           color: Colors.purple[900]!.withOpacity(0.3),
                         ),
-                        padding: EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -294,11 +331,11 @@ class CampaignDetailsScreen extends StatelessWidget {
       child: Row(
         children: [
           Icon(icon, size: 22, color: Colors.black54),
-          SizedBox(width: 14),
+          const SizedBox(width: 14),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 15,
                 color: Colors.black87,
                 fontWeight: FontWeight.w500,
@@ -328,7 +365,7 @@ class CampaignDetailsScreen extends StatelessWidget {
     }
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 16),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: color.withOpacity(0.15),

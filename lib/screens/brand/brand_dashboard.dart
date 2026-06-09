@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
+import 'brand_applications_tab.dart'; // 🔴 NOU: Importul noii pagini de aplicații
 import 'brand_profile_tab.dart';
 import 'manage_campaigns_tab.dart';
 
@@ -11,13 +12,17 @@ class BrandDashboard extends StatefulWidget {
 class _BrandDashboardState extends State<BrandDashboard> {
   int _currentIndex = 0;
 
-  // Am revenit la cele 2 tab-uri inițiale (fără pagina globală de mesaje)
-  final List<Widget> _tabs = [ManageCampaignsTab(), BrandProfileTab()];
+  // 🔴 NOU: Am integrat BrandApplicationsTab() pe poziția din mijloc
+  final List<Widget> _tabs = [
+    ManageCampaignsTab(),
+    BrandApplicationsTab(),
+    BrandProfileTab(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('NetCreato - Brand')),
+      appBar: AppBar(title: const Text('NetCreator - Brand')),
       body: _tabs[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -25,11 +30,19 @@ class _BrandDashboardState extends State<BrandDashboard> {
         selectedItemColor: Colors.purple[900],
         unselectedItemColor: Colors.grey[600],
         items: [
-          BottomNavigationBarItem(
+          // Cele 3 butoane din bara de jos
+          const BottomNavigationBarItem(
             icon: Icon(Icons.business_center),
             label: 'Campanii',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.assignment_ind_outlined),
+            label: 'Aplicații primite',
+          ), // 🔴 NOU
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profil',
+          ),
         ],
       ),
     );

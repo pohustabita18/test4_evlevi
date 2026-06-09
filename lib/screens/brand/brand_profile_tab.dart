@@ -35,8 +35,14 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
     _loadProfile();
   }
 
+  // 🔴 ÎNLOCUIEȘTE FUNCTIA _loadProfile() CU ACEASTA:
+
   void _loadProfile() async {
     DocumentSnapshot doc = await _dbService.getBrandProfile(uid);
+
+    // 🔴 FIX: Dacă utilizatorul a schimbat tab-ul între timp, oprim funcția aici și nu mai apelăm setState
+    if (!mounted) return;
+
     if (doc.exists && doc.data() != null) {
       var data = doc.data() as Map<String, dynamic>;
       _nameController.text = data['companyName'] ?? '';
@@ -44,6 +50,7 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
       _industryController.text = data['industry'] ?? '';
       _websiteController.text = data['website'] ?? '';
       _budgetController.text = (data['budget'] ?? 0).toString();
+
       setState(() {
         _logoBase64 = data['logoBase64'];
       });
@@ -90,14 +97,16 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
           ),
         );
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Eroare la salvare: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Eroare la salvare: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       } finally {
-        setState(() => _isLoading = false);
+        if (mounted) setState(() => _isLoading = false);
       }
     }
   }

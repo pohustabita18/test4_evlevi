@@ -17,14 +17,13 @@ void main() async {
   try {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
-        apiKey:
-            "AIzaSyB-BhIIk60e_vY_uTuKe76t678y_O5FLNU", // Am asigurat potrivirea caracterelor case-sensitive
+        apiKey: "AIzaSyB-BhIIk60e_vY_uTUke76t678y_O5FLNU",
         authDomain: "flutter-test4-9849c.firebaseapp.com",
         projectId: "flutter-test4-9849c",
         storageBucket: "flutter-test4-9849c.firebasestorage.app",
         messagingSenderId: "141870563500",
-        appId: "1:141870563500:web:2978a8d837a3b545ca9f09",
-        measurementId: "G-H96N4JBWEN",
+        appId: "1:141870563500:web:31e7e208a5c5f564ca9f09",
+        measurementId: "G-T4DWY74TGQ",
       ),
     );
     print("✅ Firebase s-a inițializat cu succes!");
