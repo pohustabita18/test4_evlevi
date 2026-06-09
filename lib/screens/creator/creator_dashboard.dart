@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../services/auth_service.dart';
 import 'browse_campaigns_tab.dart';
 import 'creator_profile_tab.dart';
 import 'my_applications_tab.dart'; // 🔴 NOU: Importul paginii noi
