@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/database_service.dart';
 import '../../widgets/custom_input.dart';
@@ -36,8 +35,8 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
     String? title,
     String? desc,
     double? budget,
-    String? minFollowers, // 🔴 NOU
-    String? deliverables, // 🔴 NOU
+    String? minFollowers,
+    String? deliverables,
     String? deadline,
     String? currentCategory,
     String? productCategory,
@@ -46,12 +45,8 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
     final titleCtrl = TextEditingController(text: title);
     final descCtrl = TextEditingController(text: desc);
     final budgetCtrl = TextEditingController(text: budget?.toString() ?? '');
-    final minFollowersCtrl = TextEditingController(
-      text: minFollowers ?? '',
-    ); // 🔴 NOU
-    final deliverablesCtrl = TextEditingController(
-      text: deliverables ?? '',
-    ); // 🔴 NOU
+    final minFollowersCtrl = TextEditingController(text: minFollowers ?? '');
+    final deliverablesCtrl = TextEditingController(text: deliverables ?? '');
     final deadlineCtrl = TextEditingController(text: deadline);
     final productCategoryCtrl = TextEditingController(
       text: productCategory ?? '',
@@ -71,7 +66,18 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
       barrierDismissible: false,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: Text(id == null ? 'Creează Campanie' : 'Modifică Campanie'),
+          backgroundColor:
+              Colors.white, // 🔴 NOU: Fundal alb imaculat pentru dialog
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ), // Margini curbate fluid
+          title: Text(
+            id == null ? 'Creează Campanie 📢' : 'Modifică Campanie 📝',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0F172A),
+            ), // Text titlu închis
+          ),
           content: SizedBox(
             width: 500,
             child: SingleChildScrollView(
@@ -92,30 +98,54 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
                     controller: budgetCtrl,
                     keyboardType: TextInputType.number,
                   ),
-
-                  // 🔴 NOU: Câmpuri specifice cerute în imagine
                   CustomInput(
                     label: 'Minim Urmăritori (ex: 10,000)',
                     controller: minFollowersCtrl,
                   ),
                   CustomInput(
-                    label:
-                        'Livrabile (ex: 1 Video Reels + 3 Stories TikTok/Insta)',
+                    label: 'Livrabile (ex: 1 Video Reels + 3 Stories)',
                     controller: deliverablesCtrl,
                   ),
+                  const SizedBox(height: 8),
 
+                  // 🔴 REPROIECTAT: Dropdown stilizat elegant cu text negru
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: DropdownButtonFormField<String>(
                       value: _campaignCategory,
+                      dropdownColor: Colors.white,
+                      style: const TextStyle(color: Colors.black, fontSize: 16),
                       decoration: InputDecoration(
                         labelText: 'Nișă Campanie',
-                        border: OutlineInputBorder(),
+                        labelStyle: const TextStyle(
+                          color: Colors.black54,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        filled: true,
+                        fillColor: const Color(
+                          0xFFE3F0FF,
+                        ).withOpacity(0.4), // Tentă discretă sub dropdown
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(color: Colors.black12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(color: Colors.black12),
+                        ),
                       ),
                       items: _categories
                           .map(
-                            (cat) =>
-                                DropdownMenuItem(value: cat, child: Text(cat)),
+                            (cat) => DropdownMenuItem(
+                              value: cat,
+                              child: Text(
+                                cat,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
                           )
                           .toList(),
                       onChanged: (val) =>
@@ -124,12 +154,26 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
                   ),
 
                   CustomInput(label: 'Termen Limită', controller: deadlineCtrl),
+                  const SizedBox(height: 14),
 
-                  SizedBox(height: 10),
-
+                  // 🔴 REPROIECTAT: Buton foto elegant în tonuri Soft Ice Blue
                   ElevatedButton.icon(
-                    icon: Icon(Icons.add_a_photo),
-                    label: Text('Adaugă Fotografii Produs'),
+                    icon: const Icon(Icons.add_a_photo, size: 20),
+                    label: const Text('Adaugă Fotografii Produs'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE3F0FF), // Soft Ice Blue
+                      foregroundColor: const Color(
+                        0xFF0F172A,
+                      ), // Text Deep Navy
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
+                    ),
                     onPressed: () async {
                       try {
                         final ImagePicker picker = ImagePicker();
@@ -156,25 +200,29 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
                   if (_selectedImagesBytes.isNotEmpty)
                     Container(
                       height: 80,
-                      margin: EdgeInsets.symmetric(vertical: 10),
+                      margin: const EdgeInsets.symmetric(vertical: 12),
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: _selectedImagesBytes.length,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.all(4.0),
-                            child: Image.memory(
-                              _selectedImagesBytes[index],
-                              width: 70,
-                              height: 70,
-                              fit: BoxFit.cover,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.memory(
+                                _selectedImagesBytes[index],
+                                width: 70,
+                                height: 70,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           );
                         },
                       ),
                     ),
-
-                  _isUploadingImages ? LinearProgressIndicator() : Container(),
+                  const SizedBox(height: 8),
+                  if (_isUploadingImages)
+                    const LinearProgressIndicator(color: Color(0xFF0F172A)),
                 ],
               ),
             ),
@@ -182,9 +230,25 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Anulează'),
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF0F172A),
+              ),
+              child: const Text(
+                'Anulează',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(
+                  0xFF0F172A,
+                ), // Albastru închis regal
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
               onPressed: _isUploadingImages
                   ? null
                   : () async {
@@ -204,8 +268,8 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
                           'description': descCtrl.text,
                           'productCategory': productCategoryCtrl.text,
                           'budget': double.tryParse(budgetCtrl.text) ?? 0.0,
-                          'minFollowers': minFollowersCtrl.text, // 🔴 NOU
-                          'deliverables': deliverablesCtrl.text, // 🔴 NOU
+                          'minFollowers': minFollowersCtrl.text,
+                          'deliverables': deliverablesCtrl.text,
                           'category': _campaignCategory,
                           'deadline': deadlineCtrl.text,
                           'imageUrls': imageUrlsList,
@@ -218,14 +282,17 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
                           await _dbService.updateCampaign(id, data);
                         }
 
-                        Navigator.pop(context);
+                        if (context.mounted) Navigator.pop(context);
                       } catch (e) {
                         print("Eroare la salvare: $e");
                       } finally {
                         setDialogState(() => _isUploadingImages = false);
                       }
                     },
-              child: Text('Salvează'),
+              child: const Text(
+                'Salvează',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
@@ -236,17 +303,43 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // 🔴 REPROIECTAT: Butonul plutitor de adăugare asortat cu tema închisă
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCampaignDialog(context),
-        child: Icon(Icons.add),
+        backgroundColor: const Color(0xFF0F172A), // Deep Navy
+        foregroundColor: Colors.white,
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: const Icon(Icons.add, size: 28),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _dbService.getBrandCampaigns(uid),
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
-            return Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData) {
+            return const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0F172A)),
+              ),
+            );
+          }
           var docs = snapshot.data!.docs;
+
+          if (docs.isEmpty) {
+            return const Center(
+              child: Text(
+                'Nu aveți nicio campanie activă.\nApasă pe butonul „+” pentru a crea una!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 15,
+                  height: 1.4,
+                ),
+              ),
+            );
+          }
+
           return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             itemCount: docs.length,
             itemBuilder: (context, i) {
               var data = docs[i].data() as Map<String, dynamic>;
@@ -254,13 +347,33 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
               List<dynamic> imgs = data['imageUrls'] ?? [];
 
               return Card(
-                margin: EdgeInsets.all(8),
+                margin: const EdgeInsets.symmetric(vertical: 6),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ListTile(
-                      title: Text(data['title'] ?? ''),
-                      subtitle: Text(
-                        'Nișă: ${data['category']} | Urmăritori: ${data['minFollowers'] ?? '-'}\nBuget: ${data['budget']} RON | Termen: ${data['deadline']}',
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 6,
+                      ),
+                      title: Text(
+                        data['title'] ?? 'Campanie nespecificată',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 4.0),
+                        child: Text(
+                          'Nișă: ${data['category']} | Urmăritori: ${data['minFollowers'] ?? '-'}\nBuget: ${data['budget']} RON | Termen: ${data['deadline']}',
+                          style: const TextStyle(
+                            color: Colors.black54,
+                            fontSize: 13,
+                            height: 1.3,
+                          ),
+                        ),
                       ),
                       onTap: () {
                         Navigator.push(
@@ -277,15 +390,19 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: Icon(Icons.edit, color: Colors.blue),
+                            icon: const Icon(
+                              Icons.edit_note,
+                              color: Color(0xFF0F172A),
+                              size: 28,
+                            ), // Albastru închis stilizat
                             onPressed: () => _showCampaignDialog(
                               context,
                               id: id,
                               title: data['title'],
                               desc: data['description'],
-                              budget: (data['budget'] as num).toDouble(),
-                              minFollowers: data['minFollowers'], // 🔴 NOU
-                              deliverables: data['deliverables'], // 🔴 NOU
+                              budget: (data['budget'] as num?)?.toDouble(),
+                              minFollowers: data['minFollowers'],
+                              deliverables: data['deliverables'],
                               deadline: data['deadline'],
                               currentCategory: data['category'],
                               productCategory: data['productCategory'],
@@ -293,7 +410,11 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
                             ),
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
+                            icon: const Icon(
+                              Icons.delete_outline,
+                              color: Colors.redAccent,
+                              size: 24,
+                            ),
                             onPressed: () => _dbService.deleteCampaign(id),
                           ),
                         ],
@@ -301,19 +422,20 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
                     ),
                     if (imgs.isNotEmpty)
                       Container(
-                        height: 60,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 4,
+                        height: 65,
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                          bottom: 12,
+                          right: 16,
                         ),
                         alignment: Alignment.centerLeft,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: imgs.length,
                           itemBuilder: (context, imgIndex) => Padding(
-                            padding: const EdgeInsets.only(right: 6.0),
+                            padding: const EdgeInsets.only(right: 8.0),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(6),
+                              borderRadius: BorderRadius.circular(8),
                               child: Image.memory(
                                 base64Decode(imgs[imgIndex]),
                                 width: 50,

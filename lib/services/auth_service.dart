@@ -1,10 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
+  // Stream pentru ascultarea stării utilizatorului (conectat/deconectat)
   Stream<User?> get user => _auth.authStateChanges();
 
   // Înregistrare + Salvare Rol în Firestore
@@ -34,7 +35,7 @@ class AuthService {
     }
   }
 
-  // Conectare
+  // Conectare utilizator
   Future<UserCredential?> signInWithEmailAndPassword(
     String email,
     String password,
@@ -49,17 +50,17 @@ class AuthService {
     }
   }
 
-  // Deconectare
+  // Deconectare (Logout)
   Future<void> signOut() async {
     await _auth.signOut();
   }
 
-  // Resetare Parolă
+  // Resetare Parolă prin Email
   Future<void> resetPassword(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
   }
 
-  // Luare rol utilizator curent
+  // Preluare rol pentru utilizatorul curent
   Future<String> getUserRole(String uid) async {
     DocumentSnapshot doc = await _db.collection('users').doc(uid).get();
     if (doc.exists && doc.data() != null) {

@@ -12,7 +12,7 @@ class MyApplicationsTab extends StatefulWidget {
 class _MyApplicationsTabState extends State<MyApplicationsTab> {
   final DatabaseService _dbService = DatabaseService();
   final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
-  String _selectedFilter = 'Toate'; // Filtru curent
+  String _selectedFilter = 'Toate';
 
   final List<String> _filters = [
     'Toate',
@@ -31,16 +31,17 @@ class _MyApplicationsTabState extends State<MyApplicationsTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Fundalul general Baby Blue se aplică automat din main.dart
       body: Column(
         children: [
-          // Bare de filtre sus
+          // 🏷️ Bare de filtre sus stilizată uniform
           Container(
-            height: 50,
-            padding: EdgeInsets.symmetric(vertical: 6),
+            height: 54,
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: _filters.length,
-              padding: EdgeInsets.symmetric(horizontal: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               itemBuilder: (context, idx) {
                 bool isSelected = _selectedFilter == _filters[idx];
                 return Padding(
@@ -48,9 +49,17 @@ class _MyApplicationsTabState extends State<MyApplicationsTab> {
                   child: ChoiceChip(
                     label: Text(_filters[idx]),
                     selected: isSelected,
-                    selectedColor: Colors.purple[800],
+                    // 🔴 REPROIECTAT: Culorile filtrelor asortate cu restul aplicației
+                    selectedColor: const Color(0xFF0F172A), // Deep Navy
+                    backgroundColor: const Color(0xFFE3F0FF), // Soft Ice Blue
                     labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black87,
+                      color: isSelected
+                          ? Colors.white
+                          : const Color(0xFF0F172A),
+                      fontWeight: FontWeight.bold,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     onSelected: (val) {
                       if (val) setState(() => _selectedFilter = _filters[idx]);
@@ -66,8 +75,15 @@ class _MyApplicationsTabState extends State<MyApplicationsTab> {
             child: StreamBuilder<QuerySnapshot>(
               stream: _dbService.getCreatorApplications(currentUserId),
               builder: (context, snapshot) {
-                if (!snapshot.hasData)
-                  return Center(child: CircularProgressIndicator());
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(0xFF0F172A),
+                      ),
+                    ),
+                  );
+                }
 
                 String targetStatus = _mapFilterToStatus(_selectedFilter);
                 var apps = snapshot.data!.docs.where((doc) {
@@ -77,12 +93,27 @@ class _MyApplicationsTabState extends State<MyApplicationsTab> {
                 }).toList();
 
                 if (apps.isEmpty) {
-                  return Center(
-                    child: Text('Nu ai nicio aplicație în această categorie.'),
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(24.0),
+                      child: Text(
+                        'Nu ai nicio aplicație în această categorie.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 15,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
                   );
                 }
 
                 return ListView.builder(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   itemCount: apps.length,
                   itemBuilder: (context, i) {
                     var appData = apps[i].data() as Map<String, dynamic>;
@@ -97,7 +128,7 @@ class _MyApplicationsTabState extends State<MyApplicationsTab> {
                           .doc(campaignId)
                           .get(),
                       builder: (context, campSnapshot) {
-                        String campTitle = "Campanie încărcată...";
+                        String campTitle = "Se încarcă campania...";
                         String campBudget = "-";
 
                         if (campSnapshot.hasData && campSnapshot.data!.exists) {
@@ -108,80 +139,108 @@ class _MyApplicationsTabState extends State<MyApplicationsTab> {
                         }
 
                         return Card(
-                          margin: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          child: ListTile(
-                            title: Text(
-                              campTitle,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ), // Card rotunjit premium la 24px
+                          elevation: 1,
+                          shadowColor: const Color(
+                            0xFF0F172A,
+                          ).withOpacity(0.05),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 6.0,
+                              horizontal: 4.0,
                             ),
-                            subtitle: Text(
-                              'Buget: $campBudget\nMesajul tău: "${appData['message']}"',
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                _buildStatusBadge(status),
-                                SizedBox(width: 8),
-
-                                // 🔴 NOU: StreamBuilder care ascultă notificările de mesaje noi de la Brand
-                                StreamBuilder<DocumentSnapshot>(
-                                  stream: _dbService.getChatDocument(chatId),
-                                  builder: (context, chatSnapshot) {
-                                    bool hasUnread = false;
-                                    if (chatSnapshot.hasData &&
-                                        chatSnapshot.data!.exists) {
-                                      var chatData =
-                                          chatSnapshot.data!.data()
-                                              as Map<String, dynamic>;
-                                      hasUnread =
-                                          chatData['unreadByCreator'] ??
-                                          false; // Notificare pt creator
-                                    }
-
-                                    return Stack(
-                                      alignment: Alignment.topRight,
-                                      children: [
-                                        IconButton(
-                                          icon: Icon(
-                                            hasUnread
-                                                ? Icons.mark_chat_unread
-                                                : Icons.chat,
-                                            color: hasUnread
-                                                ? Colors.red
-                                                : Colors.indigo,
-                                          ),
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (_) => ChatScreen(
-                                                  chatId: chatId,
-                                                  recipientName:
-                                                      "Suport: $campTitle",
-                                                  senderRole: '',
-                                                  // senderRole removed: not defined in ChatScreen constructor
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                        if (hasUnread)
-                                          Positioned(
-                                            right: 6,
-                                            top: 6,
-                                            child: CircleAvatar(
-                                              radius: 5,
-                                              backgroundColor: Colors.red,
-                                            ),
-                                          ),
-                                      ],
-                                    );
-                                  },
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 4,
+                              ),
+                              title: Text(
+                                campTitle,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontSize: 16,
                                 ),
-                              ],
+                              ),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 4.0),
+                                child: Text(
+                                  'Buget: $campBudget\nMesaj trimis: "${appData['message']?.isEmpty ?? true ? 'Fără mesaj text' : appData['message']}"',
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                    height: 1.3,
+                                  ),
+                                ),
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _buildStatusBadge(status),
+                                  const SizedBox(width: 8),
+
+                                  // 🔴 REPROIECTAT: Ascultare live pentru mesaje necitite de la Brand la Creator
+                                  StreamBuilder<DocumentSnapshot>(
+                                    stream: _dbService.getChatDocument(chatId),
+                                    builder: (context, chatSnapshot) {
+                                      bool hasUnread = false;
+                                      if (chatSnapshot.hasData &&
+                                          chatSnapshot.data!.exists) {
+                                        var chatData =
+                                            chatSnapshot.data!.data()
+                                                as Map<String, dynamic>;
+                                        hasUnread =
+                                            chatData['unreadByCreator'] ??
+                                            false;
+                                      }
+
+                                      return Stack(
+                                        alignment: Alignment.topRight,
+                                        children: [
+                                          IconButton(
+                                            icon: Icon(
+                                              hasUnread
+                                                  ? Icons.mark_chat_unread
+                                                  : Icons.chat_bubble_outline,
+                                              color: hasUnread
+                                                  ? Colors.red
+                                                  : const Color(
+                                                      0xFF0F172A,
+                                                    ), // Albastru închis asortat
+                                              size: 26,
+                                            ),
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (_) => ChatScreen(
+                                                    chatId: chatId,
+                                                    recipientName:
+                                                        "Suport: $campTitle",
+                                                    senderRole:
+                                                        "Creator", // 🔴 REPARAT: Trimitem corect rolul de Creator
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                          if (hasUnread)
+                                            const Positioned(
+                                              right: 4,
+                                              top: 4,
+                                              child: CircleAvatar(
+                                                radius: 5,
+                                                backgroundColor: Colors.red,
+                                              ),
+                                            ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );
@@ -197,24 +256,25 @@ class _MyApplicationsTabState extends State<MyApplicationsTab> {
     );
   }
 
+  // Stilizare capsulă status uniformă
   Widget _buildStatusBadge(String status) {
     Color color = Colors.orange;
     String text = 'În așteptare';
     if (status == 'accepted') {
       color = Colors.green;
-      text = 'Acceptat';
+      text = 'Acceptat 🎉';
     }
     if (status == 'rejected') {
       color = Colors.red;
-      text = 'Respins';
+      text = 'Respins ❌';
     }
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color),
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withOpacity(0.4), width: 1),
       ),
       child: Text(
         text,

@@ -24,21 +24,25 @@ class _LoginScreenState extends State<LoginScreen> {
           _emailController.text.trim(),
           _passwordController.text.trim(),
         );
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Conectare reușită!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Conectare reușită!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Eroare: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Eroare: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       } finally {
-        setState(() => _isLoading = false);
+        if (mounted) setState(() => _isLoading = false);
       }
     }
   }
@@ -46,62 +50,105 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                "NetCreator 🚀",
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 30),
-              CustomInput(
-                label: 'Email',
-                controller: _emailController,
-                validator: (v) => v!.contains('@') ? null : 'Email invalid',
-              ),
-              CustomInput(
-                label: 'Parolă',
-                controller: _passwordController,
-                isPassword: true,
-                validator: (v) => v!.length >= 6 ? null : 'Minim 6 caractere',
-              ),
-              SizedBox(height: 20),
-              _isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : ElevatedButton(
-                      onPressed: _login,
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+      // Fundalul se va prelua ca Baby Blue direct din tema setată în main.dart
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text(
+                  "NetCreator ",
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Color(
+                      0xFF0F172A,
+                    ), // 🔴 NOU: Albastru închis pentru titlu
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 40),
+                CustomInput(
+                  label: 'Email',
+                  controller: _emailController,
+                  validator: (v) => v!.contains('@') ? null : 'Email invalid',
+                ),
+                const SizedBox(height: 16),
+                CustomInput(
+                  label: 'Parolă',
+                  controller: _passwordController,
+                  isPassword: true,
+                  validator: (v) => v!.length >= 6 ? null : 'Minim 6 caractere',
+                ),
+                const SizedBox(height: 24),
+                _isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(0xFF0F172A),
+                          ), // 🔴 NOU: Indicator asortat
+                        ),
+                      )
+                    : ElevatedButton(
+                        onPressed: _login,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          backgroundColor: const Color(
+                            0xFF0F172A,
+                          ), // Albastru închis
+                          foregroundColor: Colors.white, // Text alb elegant
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              16,
+                            ), // Margini fin rotunjite ca formularul
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Conectează-te',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      child: Text(
-                        'Conectează-te',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-              TextButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => ResetPasswordScreen()),
+                const SizedBox(height: 20),
+                TextButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => ResetPasswordScreen()),
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color(
+                      0xFF0F172A,
+                    ), // 🔴 NOU: Text link închis
+                  ),
+                  child: const Text(
+                    'Ai uitat parola?',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-                child: Text('Ai uitat parola?'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => RegisterScreen()),
+                TextButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => RegisterScreen()),
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color(
+                      0xFF0F172A,
+                    ), // 🔴 NOU: Text link închis
+                  ),
+                  child: const Text(
+                    'Nu ai cont? Înregistrează-te',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-                child: Text('Nu ai cont? Înregistrează-te'),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

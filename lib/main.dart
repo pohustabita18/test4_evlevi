@@ -7,13 +7,9 @@ import 'screens/brand/brand_dashboard.dart';
 import 'screens/creator/creator_dashboard.dart';
 import 'screens/admin/admin_dashboard.dart';
 
-// Notificator global pentru starea Dark Mode
-final ValueNotifier<bool> isDarkModeNotifier = ValueNotifier<bool>(false);
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 🔴 FIX: Împachetăm inițializarea în try-catch pentru a opri eroarea de web_entrypoint
   try {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
@@ -37,25 +33,106 @@ void main() async {
 class NetCreatorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: isDarkModeNotifier,
-      builder: (context, isDark, child) {
-        return MaterialApp(
-          title: 'NetCreator',
-          themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-          theme: ThemeData(
-            primarySwatch: Colors.indigo,
-            scaffoldBackgroundColor: Colors.white,
-            brightness: Brightness.light,
+    return MaterialApp(
+      title: 'NetCreator',
+      themeMode:
+          ThemeMode.light, // ☀️ Forțăm aplicația să ruleze DOAR în mod luminos
+      // 🧊 TEMA LUMINOSĂ: BABY BLUE BACKGROUND + DARK BLUE ACCENTS + BLACK TEXT
+      theme: ThemeData(
+        brightness: Brightness.light,
+        primaryColor: const Color(
+          0xFF0F172A,
+        ), // 🔵 Albastru închis/Slate pentru accente
+        scaffoldBackgroundColor: const Color(
+          0xFFD2E6FF,
+        ), // 👶 Baby Blue (Fundalul principal)
+        // Stilul barei de sus (AppBar)
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFFD2E6FF),
+          foregroundColor: Color(0xFF0F172A),
+          elevation: 0,
+          iconTheme: IconThemeData(color: Color(0xFF0F172A)),
+          titleTextStyle: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF0F172A),
           ),
-          darkTheme: ThemeData(
-            primarySwatch: Colors.indigo,
-            brightness: Brightness.dark,
+        ),
+
+        // Cardurile albe cu colțuri foarte rotunjite (24px)
+        cardTheme: CardThemeData(
+          color: Colors.white,
+          elevation: 1,
+          shadowColor: const Color(0xFF0F172A).withOpacity(0.05),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
           ),
-          home: AuthWrapper(),
-          debugShowCheckedModeBanner: false,
-        );
-      },
+        ),
+
+        // Stilul pentru tag-uri (Chips)
+        chipTheme: ChipThemeData(
+          backgroundColor: const Color(0xFFE3F0FF),
+          selectedColor: const Color(0xFF0F172A),
+          labelStyle: const TextStyle(color: Color(0xFF0F172A)),
+          secondaryLabelStyle: const TextStyle(color: Colors.white),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+
+        // Butoanele mari de acțiune (Albastru Închis Premium cu scris alb)
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF0F172A),
+            foregroundColor: Colors.white,
+            elevation: 1,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
+          ),
+        ),
+
+        // Configurarea formularelor și câmpurilor de text
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          labelStyle: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+          hintStyle: const TextStyle(color: Colors.black54),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: Colors.black12, width: 1),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: Colors.black12, width: 1),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: Color(0xFF0F172A), width: 1.5),
+          ),
+        ),
+
+        // Culorile textului din întreaga aplicație
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.black),
+          bodyMedium: TextStyle(color: Colors.black),
+          titleMedium: TextStyle(color: Colors.black),
+        ),
+
+        // Meniul de navigare din partea de jos
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Colors.white,
+          selectedItemColor: Color(0xFF0F172A),
+          unselectedItemColor: Colors.black38,
+          elevation: 10,
+        ),
+      ),
+
+      home: AuthWrapper(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

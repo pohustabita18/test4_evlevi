@@ -29,17 +29,32 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Fundalul Baby Blue curat se preia automat din main.dart
       body: Column(
         children: [
-          // Câmp de căutare
+          // 🔍 Câmp de căutare stilizat
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(12.0),
             child: TextField(
+              style: const TextStyle(
+                color: Colors.black,
+              ), // Scris complet negru la tastare
               decoration: InputDecoration(
                 labelText: 'Caută după titlu...',
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search, color: Color(0xFF0F172A)),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: Colors.black12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF0F172A),
+                    width: 1.5,
+                  ),
                 ),
               ),
               onChanged: (val) =>
@@ -47,7 +62,7 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
             ),
           ),
 
-          // Selector de categorii (Chips)
+          // 🏷️ Selector de categorii (Chips) asortat
           Container(
             height: 40,
             child: ListView.builder(
@@ -61,41 +76,62 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
                   child: ChoiceChip(
                     label: Text(_categories[idx]),
                     selected: isSelected,
-                    selectedColor: Colors.purple[800],
+                    // 🔴 REPROIECTAT: Culorile Chip-urilor urmăresc stilul Deep Navy / Ice Blue
+                    selectedColor: const Color(0xFF0F172A),
+                    backgroundColor: const Color(0xFFE3F0FF),
                     labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black87,
+                      color: isSelected
+                          ? Colors.white
+                          : const Color(0xFF0F172A),
+                      fontWeight: FontWeight.bold,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     onSelected: (val) {
-                      if (val)
+                      if (val) {
                         setState(() => _selectedCategory = _categories[idx]);
+                      }
                     },
                   ),
                 );
               },
             ),
           ),
+          const SizedBox(height: 8),
 
-          // Slider pentru buget
-          Slider(
-            value: _minBudget,
-            min: 0,
-            max: 25000,
-            divisions: 50,
-            activeColor: Colors.purple[800],
-            label: 'Buget minim: ${_minBudget.toInt()} lei',
-            onChanged: (val) => setState(() => _minBudget = val),
+          // 🎚️ Slider pentru buget adaptat temei
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Slider(
+              value: _minBudget,
+              min: 0,
+              max: 25000,
+              divisions: 50,
+              activeColor: const Color(
+                0xFF0F172A,
+              ), // 🔴 NOU: Albastru închis regal
+              inactiveColor: const Color(0xFFE3F0FF),
+              label: 'Buget minim: ${_minBudget.toInt()} lei',
+              onChanged: (val) => setState(() => _minBudget = val),
+            ),
           ),
 
-          // 🔴 GRID-UL DE CAMPANII CU FILTRARE SUPLEMENTARĂ
+          // 🔴 GRID-UL DE CAMPANII CU DUBLĂ FILTRARE SIVE LIVE STREAMS
           Expanded(
-            // Pasul 1: Ascultăm aplicațiile trimise deja de acest creator
             child: StreamBuilder<QuerySnapshot>(
               stream: _dbService.getCreatorApplications(currentUserId),
               builder: (context, appSnapshot) {
-                if (!appSnapshot.hasData)
-                  return const Center(child: CircularProgressIndicator());
+                if (!appSnapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(0xFF0F172A),
+                      ),
+                    ),
+                  );
+                }
 
-                // Creăm un Set cu toate ID-urile campaniilor la care s-a aplicat deja
                 final Set<String> appliedCampaignIds = appSnapshot.data!.docs
                     .map(
                       (doc) =>
@@ -104,14 +140,19 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
                     )
                     .toSet();
 
-                // Pasul 2: Ascultăm toate campaniile din platformă
                 return StreamBuilder<QuerySnapshot>(
                   stream: _dbService.getAllCampaigns(),
                   builder: (context, snapshot) {
-                    if (!snapshot.hasData)
-                      return const Center(child: CircularProgressIndicator());
+                    if (!snapshot.hasData) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(0xFF0F172A),
+                          ),
+                        ),
+                      );
+                    }
 
-                    // Filtrăm campaniile direct în memorie înainte de a genera GridView-ul
                     var docs = snapshot.data!.docs.where((doc) {
                       var data = doc.data() as Map<String, dynamic>;
                       String title = (data['title'] ?? '')
@@ -127,8 +168,6 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
                       bool matchesCategory =
                           _selectedCategory == "Toate" ||
                           category == _selectedCategory;
-
-                      // 🔴 CONDIȚIA CONCRETĂ: Permitem afișarea DOAR dacă ID-ul NU se află în set-ul de aplicații trimise
                       bool isNewCampaign = !appliedCampaignIds.contains(doc.id);
 
                       return matchesSearch &&
@@ -139,23 +178,30 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
 
                     if (docs.isEmpty) {
                       return const Center(
-                        child: Text(
-                          'Felicitări! Ai aplicat la toate campaniile disponibile sau nu există noutăți.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.grey, fontSize: 15),
+                        child: Padding(
+                          padding: EdgeInsets.all(24.0),
+                          child: Text(
+                            'Nicio campanie nouă momentan sau ai aplicat deja la toate opțiunile disponibile! 🎉',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontSize: 15,
+                              height: 1.4,
+                            ),
+                          ),
                         ),
                       );
                     }
 
                     return GridView.builder(
-                      padding: const EdgeInsets.all(8),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 8,
-                            mainAxisSpacing: 8,
-                            childAspectRatio: 0.75,
-                          ),
+                      padding: const EdgeInsets.all(12),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        childAspectRatio:
+                            0.74, // Oferă spațiu ideal pentru designul extins al cardului
+                      ),
                       itemCount: docs.length,
                       itemBuilder: (context, i) {
                         var data = docs[i].data() as Map<String, dynamic>;
@@ -177,16 +223,19 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
                             );
                           },
                           child: Card(
-                            elevation: 2,
+                            elevation: 1,
+                            shadowColor: const Color(
+                              0xFF0F172A,
+                            ).withOpacity(0.08),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                              borderRadius: BorderRadius.circular(24),
+                            ), // 🔴 NOU: 24px rotunjire premium
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Afișare Nume Brand sus pe card
+                                // Nume Brand în partea de sus a cardului
                                 Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(10.0),
                                   child: FutureBuilder<DocumentSnapshot>(
                                     future: _dbService.getBrandProfile(brandId),
                                     builder: (context, brandSnapshot) {
@@ -202,21 +251,23 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
                                       }
                                       return Row(
                                         children: [
-                                          Icon(
+                                          const Icon(
                                             Icons.storefront,
                                             size: 16,
-                                            color: Colors.purple[800],
-                                          ),
+                                            color: Color(0xFF0F172A),
+                                          ), // 🔴 NOU: Iconiță Deep Navy
                                           const SizedBox(width: 6),
                                           Expanded(
                                             child: Text(
                                               brandName,
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 12,
-                                                color: Colors.purple[800],
+                                                color: Color(
+                                                  0xFF0F172A,
+                                                ), // Text Deep Navy
                                               ),
                                             ),
                                           ),
@@ -226,28 +277,27 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
                                   ),
                                 ),
 
-                                // Imaginea produsului
+                                // Imaginea produsului cu margini superioare drepte
                                 Expanded(
                                   child: Container(
                                     width: double.infinity,
-                                    color: Colors.grey[100],
+                                    color: const Color(0xFFF0F4F8),
                                     child: imgs.isNotEmpty
-                                        ? ClipRRect(
-                                            child: Image.memory(
-                                              base64Decode(imgs[0]),
-                                              fit: BoxFit.cover,
-                                            ),
+                                        ? Image.memory(
+                                            base64Decode(imgs[0]),
+                                            fit: BoxFit.cover,
                                           )
-                                        : Icon(
+                                        : const Icon(
                                             Icons.image,
-                                            color: Colors.grey[400],
+                                            color: Colors.black26,
+                                            size: 32,
                                           ),
                                   ),
                                 ),
 
-                                // Detalii inferioare (Titlu, Produs, Buget)
+                                // Detalii inferioare (Titlu, Categorie, Buget)
                                 Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(10.0),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -259,33 +309,38 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 14,
-                                        ),
+                                          color: Colors.black,
+                                        ), // Text complet negru
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
                                         'Produs: ${data['productCategory'] ?? 'General'}',
-                                        style: TextStyle(
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
                                           fontSize: 12,
-                                          color: Colors.grey[600],
+                                          color: Colors.black54,
                                         ),
                                       ),
-                                      const SizedBox(height: 6),
+                                      const SizedBox(height: 8),
+
+                                      // 🔴 REPROIECTAT: Tag-ul de Buget în nuanțe Soft Ice Blue și Deep Navy text
                                       Container(
                                         padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
+                                          horizontal: 10,
                                           vertical: 4,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: Colors.purple[50],
+                                          color: const Color(0xFFE3F0FF),
                                           borderRadius: BorderRadius.circular(
-                                            6,
+                                            8,
                                           ),
                                         ),
                                         child: Text(
                                           '${data['budget']} RON',
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            color: Colors.purple[900],
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Color(0xFF0F172A),
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),

@@ -11,20 +11,26 @@ class BrandApplicationsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Fundalul se preia automat ca Baby Blue din main.dart
       body: StreamBuilder<QuerySnapshot>(
         stream: _dbService.getBrandCampaigns(uid),
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
+          }
           var campaigns = snapshot.data!.docs;
 
           if (campaigns.isEmpty) {
             return const Center(
-              child: Text('Nu aveți nicio campanie creată încă.'),
+              child: Text(
+                'Nu aveți nicio campanie creată încă.',
+                style: TextStyle(color: Colors.black87, fontSize: 15),
+              ),
             );
           }
 
           return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             itemCount: campaigns.length,
             itemBuilder: (context, i) {
               var campData = campaigns[i].data() as Map<String, dynamic>;
@@ -38,26 +44,33 @@ class BrandApplicationsTab extends StatelessWidget {
                   int totalApps = apps.length;
 
                   return Card(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
+                    margin: const EdgeInsets.symmetric(vertical: 6),
                     child: ExpansionTile(
+                      iconColor: const Color(
+                        0xFF0F172A,
+                      ), // 🔴 NOU: Săgeata devine albastru închis
+                      collapsedIconColor: const Color(0xFF0F172A),
                       title: Text(
                         campData['title'] ?? 'Campanie',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
                       ),
                       subtitle: Text(
                         'Produs vizat: ${campData['productCategory'] ?? 'General'}',
+                        style: const TextStyle(color: Colors.black54),
                       ),
+                      // 🔴 REPROIECTAT: Badge-ul de înscrieri asortat cu tema închisă
                       trailing: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
+                          horizontal: 12,
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
                           color: totalApps > 0
-                              ? Colors.purple[900]
+                              ? const Color(0xFF0F172A)
                               : Colors.grey[400],
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -76,7 +89,10 @@ class BrandApplicationsTab extends StatelessWidget {
                                 padding: EdgeInsets.all(16.0),
                                 child: Text(
                                   'Nu a aplicat niciun creator la această campanie.',
-                                  style: TextStyle(color: Colors.grey),
+                                  style: TextStyle(
+                                    color: Colors.black45,
+                                    fontStyle: FontStyle.italic,
+                                  ),
                                 ),
                               ),
                             ]
@@ -86,8 +102,7 @@ class BrandApplicationsTab extends StatelessWidget {
                               String appId = appDoc.id;
                               String creatorId = appData['creatorId'] ?? '';
                               String status = appData['status'] ?? 'pending';
-                              String chatId =
-                                  "${campaignId}_$creatorId"; // ID-ul unic de chat
+                              String chatId = "${campaignId}_$creatorId";
 
                               return FutureBuilder<DocumentSnapshot>(
                                 future: _dbService.getCreatorProfile(creatorId),
@@ -105,16 +120,17 @@ class BrandApplicationsTab extends StatelessWidget {
                                   return Container(
                                     padding: const EdgeInsets.all(12),
                                     margin: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 4,
+                                      horizontal: 16,
+                                      vertical: 6,
                                     ),
+                                    // 🔴 REPROIECTAT: Fundal Soft Ice Blue asortat excelent cu Baby Blue
                                     decoration: BoxDecoration(
                                       color:
                                           Theme.of(context).brightness ==
                                               Brightness.dark
-                                          ? Colors.grey[900]
-                                          : Colors.grey[100],
-                                      borderRadius: BorderRadius.circular(8),
+                                          ? const Color(0xFF1E293B)
+                                          : const Color(0xFFE3F0FF),
+                                      borderRadius: BorderRadius.circular(14),
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
@@ -129,6 +145,8 @@ class BrandApplicationsTab extends StatelessWidget {
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 15,
+                                                color: Colors
+                                                    .black, // Scris negru curat
                                               ),
                                             ),
                                             _buildStatusBadge(status),
@@ -139,7 +157,6 @@ class BrandApplicationsTab extends StatelessWidget {
                                           mainAxisAlignment:
                                               MainAxisAlignment.end,
                                           children: [
-                                            // 🔴 NOU: StreamBuilder care verifică dacă există mesaje necitite de la Creator
                                             StreamBuilder<DocumentSnapshot>(
                                               stream: _dbService
                                                   .getChatDocument(chatId),
@@ -170,8 +187,9 @@ class BrandApplicationsTab extends StatelessWidget {
                                                                   .chat_bubble_outline,
                                                         color: hasUnread
                                                             ? Colors.red
-                                                            : Colors
-                                                                  .purple[900],
+                                                            : const Color(
+                                                                0xFF0F172A,
+                                                              ), // 🔴 NOU: Schimbat în Deep Navy
                                                         size: 26,
                                                       ),
                                                       onPressed: () {
@@ -191,7 +209,6 @@ class BrandApplicationsTab extends StatelessWidget {
                                                         );
                                                       },
                                                     ),
-                                                    // Bulă roșie mică de notificare plasată deasupra pictogramei
                                                     if (hasUnread)
                                                       const Positioned(
                                                         right: 4,
@@ -211,6 +228,12 @@ class BrandApplicationsTab extends StatelessWidget {
                                               ElevatedButton(
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor: Colors.green,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          10,
+                                                        ),
+                                                  ),
                                                 ),
                                                 onPressed: () => _dbService
                                                     .updateApplicationStatus(
@@ -221,6 +244,7 @@ class BrandApplicationsTab extends StatelessWidget {
                                                   'Acceptă',
                                                   style: TextStyle(
                                                     color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
                                               ),
@@ -228,6 +252,12 @@ class BrandApplicationsTab extends StatelessWidget {
                                               ElevatedButton(
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor: Colors.red,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          10,
+                                                        ),
+                                                  ),
                                                 ),
                                                 onPressed: () => _dbService
                                                     .updateApplicationStatus(
@@ -238,6 +268,7 @@ class BrandApplicationsTab extends StatelessWidget {
                                                   'Respinge',
                                                   style: TextStyle(
                                                     color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
                                               ),

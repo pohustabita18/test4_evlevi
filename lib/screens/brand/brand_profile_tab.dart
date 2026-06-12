@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../main.dart'; // 🔴 NOU: Importăm notificatorul de Dark Mode
-import '../../services/auth_service.dart'; // 🔴 NOU: Pentru deconectare
+// 🗑️ Am eliminat importul către main.dart deoarece isDarkModeNotifier nu mai există
+import '../../services/auth_service.dart';
 import '../../services/database_service.dart';
 import '../../widgets/custom_input.dart';
 
@@ -35,12 +35,9 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
     _loadProfile();
   }
 
-  // 🔴 ÎNLOCUIEȘTE FUNCTIA _loadProfile() CU ACEASTA:
-
   void _loadProfile() async {
     DocumentSnapshot doc = await _dbService.getBrandProfile(uid);
 
-    // 🔴 FIX: Dacă utilizatorul a schimbat tab-ul între timp, oprim funcția aici și nu mai apelăm setState
     if (!mounted) return;
 
     if (doc.exists && doc.data() != null) {
@@ -90,12 +87,14 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
           'logoBase64': _logoBase64,
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profil brand salvat cu succes!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profil brand salvat cu succes! 🎉'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -120,28 +119,29 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
           key: _formKey,
           child: ListView(
             children: [
+              const SizedBox(height: 10),
               Center(
                 child: GestureDetector(
                   onTap: _pickImage,
                   child: CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.purple[50],
+                    radius: 54,
+                    backgroundColor: const Color(0xFFE3F0FF),
                     backgroundImage: _logoBytes != null
                         ? MemoryImage(_logoBytes!)
                         : (_logoBase64 != null
                               ? MemoryImage(base64Decode(_logoBase64!))
                               : null),
                     child: _logoBytes == null && _logoBase64 == null
-                        ? Icon(
+                        ? const Icon(
                             Icons.add_a_photo,
-                            size: 40,
-                            color: Colors.purple[900],
+                            size: 38,
+                            color: Color(0xFF0F172A),
                           )
                         : null,
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 25),
               CustomInput(label: 'Nume Companie', controller: _nameController),
               CustomInput(
                 label: 'Descriere Brand',
@@ -157,56 +157,64 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
                 controller: _budgetController,
                 keyboardType: TextInputType.number,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               _isLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(0xFF0F172A),
+                        ),
+                      ),
+                    )
                   : ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: const Color(0xFF0F172A),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 0,
                       ),
                       onPressed: _saveProfile,
                       child: const Text(
                         'Salvează Profilul',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
 
-              // 🔴 NOU: SECȚIUNE SETĂRI ȘI LOGOUT INTEGRATĂ ÎN PROFIL
+              // Secțiune Setări aplicație
               const Padding(
                 padding: EdgeInsets.only(top: 30.0),
-                child: Divider(),
+                child: Divider(color: Colors.black12),
               ),
+              const SizedBox(height: 8),
               const Text(
                 'Setări aplicație',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(
+                height: 16,
+              ), // Ajustat spațiul pentru un layout aerisit
+              // 🗑️ Containerul complet cu ValueListenableBuilder și SwitchListTile a fost eliminat de aici
 
-              // Comutator pentru Dark Mode
-              ValueListenableBuilder<bool>(
-                valueListenable: isDarkModeNotifier,
-                builder: (context, isDark, child) {
-                  return SwitchListTile(
-                    title: const Text('Mod Întunecat (Dark Mode)'),
-                    secondary: const Icon(Icons.dark_mode),
-                    value: isDark,
-                    onChanged: (val) {
-                      isDarkModeNotifier.value = val;
-                    },
-                  );
-                },
-              ),
-              const SizedBox(height: 15),
-
-              // Butonul de Logout (Deconectare)
+              // Butonul de Logout (Deconectare) restructurat
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red[700],
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                   ),
+                  elevation: 0,
                 ),
                 icon: const Icon(Icons.logout),
                 label: const Text(
