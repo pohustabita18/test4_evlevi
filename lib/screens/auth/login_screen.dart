@@ -50,7 +50,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Fundalul se va prelua ca Baby Blue direct din tema setată în main.dart
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -65,9 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(
                     fontSize: 36,
                     fontWeight: FontWeight.bold,
-                    color: Color(
-                      0xFF0F172A,
-                    ), // 🔴 NOU: Albastru închis pentru titlu
+                    color: Color(0xFF0F172A),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -90,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation<Color>(
                             Color(0xFF0F172A),
-                          ), // 🔴 NOU: Indicator asortat
+                          ),
                         ),
                       )
                     : ElevatedButton(
@@ -102,9 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ), // Albastru închis
                           foregroundColor: Colors.white, // Text alb elegant
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              16,
-                            ), // Margini fin rotunjite ca formularul
+                            borderRadius: BorderRadius.circular(16),
                           ),
                           elevation: 0,
                         ),
@@ -123,9 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     MaterialPageRoute(builder: (_) => ResetPasswordScreen()),
                   ),
                   style: TextButton.styleFrom(
-                    foregroundColor: const Color(
-                      0xFF0F172A,
-                    ), // 🔴 NOU: Text link închis
+                    foregroundColor: const Color(0xFF0F172A),
                   ),
                   child: const Text(
                     'Ai uitat parola?',
@@ -138,9 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     MaterialPageRoute(builder: (_) => RegisterScreen()),
                   ),
                   style: TextButton.styleFrom(
-                    foregroundColor: const Color(
-                      0xFF0F172A,
-                    ), // 🔴 NOU: Text link închis
+                    foregroundColor: const Color(0xFF0F172A),
                   ),
                   child: const Text(
                     'Nu ai cont? Înregistrează-te',

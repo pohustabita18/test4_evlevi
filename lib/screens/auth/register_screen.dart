@@ -53,10 +53,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cont Nou'),
-        backgroundColor: const Color(
-          0xFFD2E6FF,
-        ), // 🔴 NOU: Asortat cu Baby Blue global
-        foregroundColor: const Color(0xFF0F172A), // Text titlu albastru închis
+        backgroundColor: const Color(0xFFD2E6FF),
+        foregroundColor: const Color(0xFF0F172A),
         elevation: 0,
       ),
       body: Padding(
@@ -83,13 +81,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 'Alege tipul de utilizator:',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.black, // 🔴 NOU: Scris complet negru
+                  color: Colors.black,
                   fontSize: 15,
                 ),
               ),
               const SizedBox(height: 10),
 
-              // 🔴 REPROIECTAT: Caseta albă curată pentru Dropdown
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -104,11 +101,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: DropdownButton<String>(
                     value: _selectedRole,
                     isExpanded: true,
-                    dropdownColor: Colors.white, // Fundalul listei rămâne alb
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                    ), // Text interior complet negru
+                    dropdownColor: Colors.white,
+                    style: const TextStyle(color: Colors.black, fontSize: 16),
                     items: ['Brand', 'Creator']
                         .map(
                           (role) => DropdownMenuItem(
@@ -133,7 +127,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(
                           Color(0xFF0F172A),
-                        ), // Indicator asortat
+                        ),
                       ),
                     )
                   : ElevatedButton(
@@ -145,9 +139,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ), // Albastru închis premium
                         foregroundColor: Colors.white, // Text alb
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            16,
-                          ), // Margini rotunjite fluid
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         elevation: 0,
                       ),

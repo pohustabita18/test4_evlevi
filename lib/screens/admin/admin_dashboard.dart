@@ -19,7 +19,7 @@ class AdminDashboard extends StatelessWidget {
               onPressed: () => AuthService().signOut(),
             ),
           ],
-          // 🔴 REPROIECTAT: TabBar asortat cu accentele închise (Deep Navy)
+
           bottom: const TabBar(
             labelColor: Color(0xFF0F172A), // Culoarea tab-ului activ
             unselectedLabelColor: Colors.black54, // Culoarea tab-ului inactiv
@@ -33,7 +33,6 @@ class AdminDashboard extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            // 👥 SECȚIUNEA 1: LISTĂ UTILIZATORI
             StreamBuilder<QuerySnapshot>(
               stream: _dbService.getAllUsers(),
               builder: (context, snapshot) {
@@ -61,7 +60,7 @@ class AdminDashboard extends StatelessWidget {
                     var data = docs[i].data() as Map<String, dynamic>;
                     return Card(
                       margin: const EdgeInsets.symmetric(vertical: 6),
-                      // Cardul va fi alb automat din tema globală, contrastând superb cu Baby Blue
+
                       child: ListTile(
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -96,7 +95,6 @@ class AdminDashboard extends StatelessWidget {
               },
             ),
 
-            // 📢 SECȚIUNEA 2: LISTĂ TOATE CAMPANIILE
             StreamBuilder<QuerySnapshot>(
               stream: _dbService.getAllCampaigns(),
               builder: (context, snapshot) {

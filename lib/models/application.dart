@@ -3,7 +3,7 @@ class CampaignApplication {
   final String campaignId;
   final String creatorId;
   final String message;
-  final String status; // 'pending', 'accepted', 'rejected'
+  final String status;
   final DateTime createdAt;
 
   CampaignApplication({

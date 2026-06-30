@@ -16,12 +16,9 @@ class CampaignApplicationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Fundalul general Baby Blue se preia automat din main.dart
       appBar: AppBar(
         title: Text('Aplicații: $campaignTitle'),
-        backgroundColor: const Color(
-          0xFFD2E6FF,
-        ), // 🔴 NOU: Asortat cu Baby Blue global
+        backgroundColor: const Color(0xFFD2E6FF),
         foregroundColor: const Color(0xFF0F172A), // Text titlu albastru închis
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
@@ -75,7 +72,7 @@ class CampaignApplicationsScreen extends StatelessWidget {
                     margin: const EdgeInsets.symmetric(vertical: 6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24),
-                    ), // Margini rotunjite la 24px
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
@@ -89,12 +86,10 @@ class CampaignApplicationsScreen extends StatelessWidget {
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black, // Scris negru curat
+                                  color: Colors.black,
                                 ),
                               ),
-                              _buildStatusBadge(
-                                status,
-                              ), // 🔴 NOU: Ecuson stilizat în loc de text brut
+                              _buildStatusBadge(status),
                             ],
                           ),
                           const SizedBox(height: 12),
@@ -112,7 +107,6 @@ class CampaignApplicationsScreen extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              // 🔴 REPROIECTAT: Monitorizare chat în timp real cu culori asortate temei noi
                               StreamBuilder<DocumentSnapshot>(
                                 stream: _dbService.getChatDocument(chatId),
                                 builder: (context, chatSnapshot) {
@@ -142,9 +136,7 @@ class CampaignApplicationsScreen extends StatelessWidget {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: hasUnread
                                           ? Colors.red
-                                          : const Color(
-                                              0xFFE3F0FF,
-                                            ), // Soft Ice Blue dacă e citit
+                                          : const Color(0xFFE3F0FF),
                                       foregroundColor: hasUnread
                                           ? Colors.white
                                           : const Color(
@@ -243,7 +235,6 @@ class CampaignApplicationsScreen extends StatelessWidget {
     );
   }
 
-  // 🔴 METODĂ NOUĂ: Creează o capsulă vizuală curată pentru statusul aplicației
   Widget _buildStatusBadge(String status) {
     Color color = Colors.orange;
     String text = 'În așteptare';

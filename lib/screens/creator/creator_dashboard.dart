@@ -20,15 +20,10 @@ class _CreatorDashboardState extends State<CreatorDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Fundalul Baby Blue se aplică automat pe Scaffold din tema globală
       appBar: AppBar(
         title: const Text('NetCreator - Creator'),
-        backgroundColor: const Color(
-          0xFFD2E6FF,
-        ), // 🔴 NOU: Asortat perfect cu Baby Blue din fundal
-        foregroundColor: const Color(
-          0xFF0F172A,
-        ), // Text titlu albastru închis regal
+        backgroundColor: const Color(0xFFD2E6FF),
+        foregroundColor: const Color(0xFF0F172A),
         elevation: 0,
       ),
       body: _tabs[_currentIndex],
@@ -36,18 +31,12 @@ class _CreatorDashboardState extends State<CreatorDashboard> {
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
 
-        // 🔴 REPROIECTAT: Culorile barei de navigare inferioare pentru Creator
-        backgroundColor: Colors.white, // Fundal alb curat pentru meniu
-        selectedItemColor: const Color(
-          0xFF0F172A,
-        ), // Pictograma activă devine albastru închis
-        unselectedItemColor:
-            Colors.black38, // Pictogramele inactive devin gri-negru discret
+        backgroundColor: Colors.white,
+        selectedItemColor: const Color(0xFF0F172A),
+        unselectedItemColor: Colors.black38,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
         showUnselectedLabels: true,
-        type: BottomNavigationBarType
-            .fixed, // Împiedică mișcările ciudate ale iconițelor la apăsare
-
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.search),

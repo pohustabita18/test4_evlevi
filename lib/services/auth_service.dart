@@ -5,10 +5,8 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  // Stream pentru ascultarea stării utilizatorului (conectat/deconectat)
   Stream<User?> get user => _auth.authStateChanges();
 
-  // Înregistrare + Salvare Rol în Firestore
   Future<UserCredential?> registerWithEmailAndPassword(
     String email,
     String password,
@@ -35,7 +33,6 @@ class AuthService {
     }
   }
 
-  // Conectare utilizator
   Future<UserCredential?> signInWithEmailAndPassword(
     String email,
     String password,
@@ -50,17 +47,14 @@ class AuthService {
     }
   }
 
-  // Deconectare (Logout)
   Future<void> signOut() async {
     await _auth.signOut();
   }
 
-  // Resetare Parolă prin Email
   Future<void> resetPassword(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
   }
 
-  // Preluare rol pentru utilizatorul curent
   Future<String> getUserRole(String uid) async {
     DocumentSnapshot doc = await _db.collection('users').doc(uid).get();
     if (doc.exists && doc.data() != null) {

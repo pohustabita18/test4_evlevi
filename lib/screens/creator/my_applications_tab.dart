@@ -31,10 +31,8 @@ class _MyApplicationsTabState extends State<MyApplicationsTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Fundalul general Baby Blue se aplică automat din main.dart
       body: Column(
         children: [
-          // 🏷️ Bare de filtre sus stilizată uniform
           Container(
             height: 54,
             padding: const EdgeInsets.symmetric(vertical: 8),
@@ -49,7 +47,7 @@ class _MyApplicationsTabState extends State<MyApplicationsTab> {
                   child: ChoiceChip(
                     label: Text(_filters[idx]),
                     selected: isSelected,
-                    // 🔴 REPROIECTAT: Culorile filtrelor asortate cu restul aplicației
+
                     selectedColor: const Color(0xFF0F172A), // Deep Navy
                     backgroundColor: const Color(0xFFE3F0FF), // Soft Ice Blue
                     labelStyle: TextStyle(
@@ -70,7 +68,6 @@ class _MyApplicationsTabState extends State<MyApplicationsTab> {
             ),
           ),
 
-          // Lista de aplicații trimise
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: _dbService.getCreatorApplications(currentUserId),
@@ -121,7 +118,6 @@ class _MyApplicationsTabState extends State<MyApplicationsTab> {
                     String status = appData['status'] ?? 'pending';
                     String chatId = "${campaignId}_$currentUserId";
 
-                    // Luăm detaliile campaniei din Firestore
                     return FutureBuilder<DocumentSnapshot>(
                       future: FirebaseFirestore.instance
                           .collection('campaigns')
@@ -142,7 +138,7 @@ class _MyApplicationsTabState extends State<MyApplicationsTab> {
                           margin: const EdgeInsets.symmetric(vertical: 6),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(24),
-                          ), // Card rotunjit premium la 24px
+                          ),
                           elevation: 1,
                           shadowColor: const Color(
                             0xFF0F172A,
@@ -181,7 +177,6 @@ class _MyApplicationsTabState extends State<MyApplicationsTab> {
                                   _buildStatusBadge(status),
                                   const SizedBox(width: 8),
 
-                                  // 🔴 REPROIECTAT: Ascultare live pentru mesaje necitite de la Brand la Creator
                                   StreamBuilder<DocumentSnapshot>(
                                     stream: _dbService.getChatDocument(chatId),
                                     builder: (context, chatSnapshot) {
@@ -206,9 +201,7 @@ class _MyApplicationsTabState extends State<MyApplicationsTab> {
                                                   : Icons.chat_bubble_outline,
                                               color: hasUnread
                                                   ? Colors.red
-                                                  : const Color(
-                                                      0xFF0F172A,
-                                                    ), // Albastru închis asortat
+                                                  : const Color(0xFF0F172A),
                                               size: 26,
                                             ),
                                             onPressed: () {
@@ -219,8 +212,7 @@ class _MyApplicationsTabState extends State<MyApplicationsTab> {
                                                     chatId: chatId,
                                                     recipientName:
                                                         "Suport: $campTitle",
-                                                    senderRole:
-                                                        "Creator", // 🔴 REPARAT: Trimitem corect rolul de Creator
+                                                    senderRole: "Creator",
                                                   ),
                                                 ),
                                               );
@@ -256,7 +248,6 @@ class _MyApplicationsTabState extends State<MyApplicationsTab> {
     );
   }
 
-  // Stilizare capsulă status uniformă
   Widget _buildStatusBadge(String status) {
     Color color = Colors.orange;
     String text = 'În așteptare';

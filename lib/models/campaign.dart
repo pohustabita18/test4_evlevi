@@ -6,7 +6,7 @@ class Campaign {
   final double budget;
   final String criteria;
   final String deadline;
-  final String status; // 'active', 'closed'
+  final String status;
 
   Campaign({
     required this.id,

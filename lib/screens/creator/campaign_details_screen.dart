@@ -23,13 +23,10 @@ class CampaignDetailsScreen extends StatelessWidget {
     String brandId = campaignData['brandId'] ?? '';
 
     return Scaffold(
-      // Fundalul general Baby Blue se aplică automat din main.dart
       appBar: AppBar(
         title: const Text('Detalii campanie'),
-        backgroundColor: const Color(
-          0xFFD2E6FF,
-        ), // 🔴 NOU: Asortat cu Baby Blue global
-        foregroundColor: const Color(0xFF0F172A), // Text titlu albastru închis
+        backgroundColor: const Color(0xFFD2E6FF),
+        foregroundColor: const Color(0xFF0F172A),
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
       ),
@@ -54,13 +51,10 @@ class CampaignDetailsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 🖼️ Imaginea mare de Header adaptată cromatic
                       Container(
                         width: double.infinity,
                         height: 230,
-                        color: const Color(
-                          0xFFE3F0FF,
-                        ), // 🔴 NOU: Înlocuit gri-ul cu un Soft Ice Blue curat
+                        color: const Color(0xFFE3F0FF),
                         child: hasImage
                             ? Image.memory(
                                 base64Decode(imgs[0]),
@@ -93,16 +87,14 @@ class CampaignDetailsScreen extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                // Tag-ul de Buget proeminent în stil Deep Navy
+
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 14,
                                     vertical: 8,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: const Color(
-                                      0xFF0F172A,
-                                    ), // 🔴 NOU: Albastru închis regal
+                                    color: const Color(0xFF0F172A),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
@@ -119,7 +111,6 @@ class CampaignDetailsScreen extends StatelessWidget {
 
                             const SizedBox(height: 8),
 
-                            // Afișare Nume Brand dinamic sub titlu
                             FutureBuilder<DocumentSnapshot>(
                               future: _dbService.getBrandProfile(brandId),
                               builder: (context, brandSnapshot) {
@@ -166,7 +157,6 @@ class CampaignDetailsScreen extends StatelessWidget {
 
                             const Divider(height: 30, color: Colors.black12),
 
-                            // Secțiunea Cerințe
                             const Text(
                               'Cerințe 📌',
                               style: TextStyle(
@@ -234,7 +224,6 @@ class CampaignDetailsScreen extends StatelessWidget {
                 ),
               ),
 
-              // 🧱 Bara de acțiuni inferioară flotantă (Alb imaculat)
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -260,9 +249,7 @@ class CampaignDetailsScreen extends StatelessWidget {
                       child: !hasApplied
                           ? ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(
-                                  0xFF0F172A,
-                                ), // 🔴 NOU: Buton mare Deep Navy
+                                backgroundColor: const Color(0xFF0F172A),
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 16,
                                 ),
@@ -317,7 +304,6 @@ class CampaignDetailsScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
 
-                    // 🔴 REPROIECTAT: Butonul de chat asortat cu marginile Deep Navy
                     IconButton(
                       icon: const Icon(
                         Icons.chat_bubble_outline,
@@ -364,11 +350,7 @@ class CampaignDetailsScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          Icon(
-            icon,
-            size: 22,
-            color: const Color(0xFF0F172A),
-          ), // 🔴 NOU: Iconițe Deep Navy
+          Icon(icon, size: 22, color: const Color(0xFF0F172A)),
           const SizedBox(width: 14),
           Expanded(
             child: Text(

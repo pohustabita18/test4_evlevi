@@ -1,7 +1,7 @@
 class AppUser {
   final String id;
   final String email;
-  final String role; // 'Brand', 'Creator', 'Admin'
+  final String role;
   final DateTime createdAt;
 
   AppUser({

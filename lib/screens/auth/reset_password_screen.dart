@@ -9,13 +9,10 @@ class ResetPasswordScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Fundalul general Baby Blue este preluat automat din main.dart
       appBar: AppBar(
         title: const Text('Resetare Parolă'),
-        backgroundColor: const Color(
-          0xFFD2E6FF,
-        ), // 🔴 NOU: Asortat cu fundalul Baby Blue
-        foregroundColor: const Color(0xFF0F172A), // Text titlu albastru închis
+        backgroundColor: const Color(0xFFD2E6FF),
+        foregroundColor: const Color(0xFF0F172A),
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
       ),
@@ -23,8 +20,7 @@ class ResetPasswordScreen extends StatelessWidget {
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment
-              .stretch, // Forțăm elementele să se întindă frumos pe lățime
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CustomInput(
               label: 'Introdu Email-ul',
@@ -36,7 +32,6 @@ class ResetPasswordScreen extends StatelessWidget {
                 if (_emailController.text.isNotEmpty) {
                   await _auth.resetPassword(_emailController.text.trim());
 
-                  // Verificăm dacă ecranul este încă activ înainte de a afișa SnackBar sau Navigator.pop
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -63,14 +58,10 @@ class ResetPasswordScreen extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: const Color(
-                  0xFF0F172A,
-                ), // Albastru închis premium
+                backgroundColor: const Color(0xFF0F172A),
                 foregroundColor: Colors.white, // Text alb
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                    16,
-                  ), // Margini fin rotunjite asortate
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 elevation: 0,
               ),

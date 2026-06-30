@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-// 🗑️ Am eliminat importul către main.dart pentru că nu mai avem nevoie de isDarkModeNotifier
 import '../../services/auth_service.dart';
 import '../../services/database_service.dart';
 import '../../widgets/custom_input.dart';
@@ -188,7 +187,6 @@ class _CreatorProfileTabState extends State<CreatorProfileTab> {
                       ),
                     ),
 
-              // Secțiune Setări aplicație
               const Padding(
                 padding: EdgeInsets.only(top: 30.0),
                 child: Divider(color: Colors.black12),
@@ -202,12 +200,8 @@ class _CreatorProfileTabState extends State<CreatorProfileTab> {
                   color: Colors.black,
                 ),
               ),
-              const SizedBox(
-                height: 16,
-              ), // Modificat spațierea pentru un aspect curat
-              // 🗑️ Containerul cu SwitchListTile pentru Dark Mode a fost ȘTERS complet de aici
+              const SizedBox(height: 16),
 
-              // Butonul de Logout (Deconectare)
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red[700],

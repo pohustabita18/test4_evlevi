@@ -29,7 +29,6 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Fundalul Baby Blue curat se preia automat din main.dart
       body: Column(
         children: [
           // 🔍 Câmp de căutare stilizat
@@ -62,7 +61,6 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
             ),
           ),
 
-          // 🏷️ Selector de categorii (Chips) asortat
           Container(
             height: 40,
             child: ListView.builder(
@@ -76,7 +74,7 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
                   child: ChoiceChip(
                     label: Text(_categories[idx]),
                     selected: isSelected,
-                    // 🔴 REPROIECTAT: Culorile Chip-urilor urmăresc stilul Deep Navy / Ice Blue
+
                     selectedColor: const Color(0xFF0F172A),
                     backgroundColor: const Color(0xFFE3F0FF),
                     labelStyle: TextStyle(
@@ -117,7 +115,6 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
             ),
           ),
 
-          // 🔴 GRID-UL DE CAMPANII CU DUBLĂ FILTRARE SIVE LIVE STREAMS
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: _dbService.getCreatorApplications(currentUserId),
@@ -195,13 +192,13 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
 
                     return GridView.builder(
                       padding: const EdgeInsets.all(12),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        childAspectRatio:
-                            0.74, // Oferă spațiu ideal pentru designul extins al cardului
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: 0.74,
+                          ),
                       itemCount: docs.length,
                       itemBuilder: (context, i) {
                         var data = docs[i].data() as Map<String, dynamic>;
@@ -229,11 +226,10 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
                             ).withOpacity(0.08),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24),
-                            ), // 🔴 NOU: 24px rotunjire premium
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Nume Brand în partea de sus a cardului
                                 Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: FutureBuilder<DocumentSnapshot>(
@@ -255,7 +251,7 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
                                             Icons.storefront,
                                             size: 16,
                                             color: Color(0xFF0F172A),
-                                          ), // 🔴 NOU: Iconiță Deep Navy
+                                          ),
                                           const SizedBox(width: 6),
                                           Expanded(
                                             child: Text(
@@ -277,7 +273,6 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
                                   ),
                                 ),
 
-                                // Imaginea produsului cu margini superioare drepte
                                 Expanded(
                                   child: Container(
                                     width: double.infinity,
@@ -295,7 +290,6 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
                                   ),
                                 ),
 
-                                // Detalii inferioare (Titlu, Categorie, Buget)
                                 Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: Column(
@@ -324,7 +318,6 @@ class _BrowseCampaignsTabState extends State<BrowseCampaignsTab> {
                                       ),
                                       const SizedBox(height: 8),
 
-                                      // 🔴 REPROIECTAT: Tag-ul de Buget în nuanțe Soft Ice Blue și Deep Navy text
                                       Container(
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 10,

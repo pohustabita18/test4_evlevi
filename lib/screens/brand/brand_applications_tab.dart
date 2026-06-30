@@ -62,7 +62,7 @@ class BrandApplicationsTab extends StatelessWidget {
                         'Produs vizat: ${campData['productCategory'] ?? 'General'}',
                         style: const TextStyle(color: Colors.black54),
                       ),
-                      // 🔴 REPROIECTAT: Badge-ul de înscrieri asortat cu tema închisă
+
                       trailing: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -123,7 +123,7 @@ class BrandApplicationsTab extends StatelessWidget {
                                       horizontal: 16,
                                       vertical: 6,
                                     ),
-                                    // 🔴 REPROIECTAT: Fundal Soft Ice Blue asortat excelent cu Baby Blue
+
                                     decoration: BoxDecoration(
                                       color:
                                           Theme.of(context).brightness ==
@@ -189,7 +189,7 @@ class BrandApplicationsTab extends StatelessWidget {
                                                             ? Colors.red
                                                             : const Color(
                                                                 0xFF0F172A,
-                                                              ), // 🔴 NOU: Schimbat în Deep Navy
+                                                              ),
                                                         size: 26,
                                                       ),
                                                       onPressed: () {

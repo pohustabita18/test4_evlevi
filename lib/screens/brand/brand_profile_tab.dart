@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-// 🗑️ Am eliminat importul către main.dart deoarece isDarkModeNotifier nu mai există
+
 import '../../services/auth_service.dart';
 import '../../services/database_service.dart';
 import '../../widgets/custom_input.dart';
@@ -186,7 +186,6 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
                       ),
                     ),
 
-              // Secțiune Setări aplicație
               const Padding(
                 padding: EdgeInsets.only(top: 30.0),
                 child: Divider(color: Colors.black12),
@@ -200,12 +199,8 @@ class _BrandProfileTabState extends State<BrandProfileTab> {
                   color: Colors.black,
                 ),
               ),
-              const SizedBox(
-                height: 16,
-              ), // Ajustat spațiul pentru un layout aerisit
-              // 🗑️ Containerul complet cu ValueListenableBuilder și SwitchListTile a fost eliminat de aici
+              const SizedBox(height: 16),
 
-              // Butonul de Logout (Deconectare) restructurat
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red[700],

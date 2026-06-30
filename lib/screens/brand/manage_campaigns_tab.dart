@@ -66,17 +66,16 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
       barrierDismissible: false,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          backgroundColor:
-              Colors.white, // 🔴 NOU: Fundal alb imaculat pentru dialog
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
-          ), // Margini curbate fluid
+          ),
           title: Text(
             id == null ? 'Creează Campanie 📢' : 'Modifică Campanie 📝',
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               color: Color(0xFF0F172A),
-            ), // Text titlu închis
+            ),
           ),
           content: SizedBox(
             width: 500,
@@ -108,7 +107,6 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
                   ),
                   const SizedBox(height: 8),
 
-                  // 🔴 REPROIECTAT: Dropdown stilizat elegant cu text negru
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: DropdownButtonFormField<String>(
@@ -122,9 +120,7 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
                           fontWeight: FontWeight.bold,
                         ),
                         filled: true,
-                        fillColor: const Color(
-                          0xFFE3F0FF,
-                        ).withOpacity(0.4), // Tentă discretă sub dropdown
+                        fillColor: const Color(0xFFE3F0FF).withOpacity(0.4),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: const BorderSide(color: Colors.black12),
@@ -156,7 +152,6 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
                   CustomInput(label: 'Termen Limită', controller: deadlineCtrl),
                   const SizedBox(height: 14),
 
-                  // 🔴 REPROIECTAT: Buton foto elegant în tonuri Soft Ice Blue
                   ElevatedButton.icon(
                     icon: const Icon(Icons.add_a_photo, size: 20),
                     label: const Text('Adaugă Fotografii Produs'),
@@ -303,7 +298,6 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 🔴 REPROIECTAT: Butonul plutitor de adăugare asortat cu tema închisă
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCampaignDialog(context),
         backgroundColor: const Color(0xFF0F172A), // Deep Navy
@@ -394,7 +388,7 @@ class _ManageCampaignsTabState extends State<ManageCampaignsTab> {
                               Icons.edit_note,
                               color: Color(0xFF0F172A),
                               size: 28,
-                            ), // Albastru închis stilizat
+                            ),
                             onPressed: () => _showCampaignDialog(
                               context,
                               id: id,

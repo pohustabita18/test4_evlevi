@@ -22,9 +22,9 @@ void main() async {
         measurementId: "G-T4DWY74TGQ",
       ),
     );
-    print("✅ Firebase s-a inițializat cu succes!");
+    print(" Firebase s-a inițializat cu succes!");
   } catch (e) {
-    print("🔴 AVERTISMENT FIREBASE (Aplicația pornește oricum): $e");
+    print(" AVERTISMENT FIREBASE (Aplicația pornește oricum): $e");
   }
 
   runApp(NetCreatorApp());
@@ -35,17 +35,11 @@ class NetCreatorApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'NetCreator',
-      themeMode:
-          ThemeMode.light, // ☀️ Forțăm aplicația să ruleze DOAR în mod luminos
-      // 🧊 TEMA LUMINOSĂ: BABY BLUE BACKGROUND + DARK BLUE ACCENTS + BLACK TEXT
+      themeMode: ThemeMode.light, //
       theme: ThemeData(
         brightness: Brightness.light,
-        primaryColor: const Color(
-          0xFF0F172A,
-        ), // 🔵 Albastru închis/Slate pentru accente
-        scaffoldBackgroundColor: const Color(
-          0xFFD2E6FF,
-        ), // 👶 Baby Blue (Fundalul principal)
+        primaryColor: const Color(0xFF0F172A),
+        scaffoldBackgroundColor: const Color(0xFFD2E6FF), //
         // Stilul barei de sus (AppBar)
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFFD2E6FF),
@@ -59,7 +53,6 @@ class NetCreatorApp extends StatelessWidget {
           ),
         ),
 
-        // Cardurile albe cu colțuri foarte rotunjite (24px)
         cardTheme: CardThemeData(
           color: Colors.white,
           elevation: 1,
@@ -69,7 +62,6 @@ class NetCreatorApp extends StatelessWidget {
           ),
         ),
 
-        // Stilul pentru tag-uri (Chips)
         chipTheme: ChipThemeData(
           backgroundColor: const Color(0xFFE3F0FF),
           selectedColor: const Color(0xFF0F172A),
@@ -80,7 +72,6 @@ class NetCreatorApp extends StatelessWidget {
           ),
         ),
 
-        // Butoanele mari de acțiune (Albastru Închis Premium cu scris alb)
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF0F172A),
@@ -115,14 +106,12 @@ class NetCreatorApp extends StatelessWidget {
           ),
         ),
 
-        // Culorile textului din întreaga aplicație
         textTheme: const TextTheme(
           bodyLarge: TextStyle(color: Colors.black),
           bodyMedium: TextStyle(color: Colors.black),
           titleMedium: TextStyle(color: Colors.black),
         ),
 
-        // Meniul de navigare din partea de jos
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: Colors.white,
           selectedItemColor: Color(0xFF0F172A),
