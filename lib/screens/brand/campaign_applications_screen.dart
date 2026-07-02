@@ -19,7 +19,7 @@ class CampaignApplicationsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Aplicații: $campaignTitle'),
         backgroundColor: const Color(0xFFD2E6FF),
-        foregroundColor: const Color(0xFF0F172A), // Text titlu albastru închis
+        foregroundColor: const Color(0xFF0F172A),
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
       ),

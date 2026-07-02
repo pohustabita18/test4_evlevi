@@ -21,9 +21,9 @@ class AdminDashboard extends StatelessWidget {
           ],
 
           bottom: const TabBar(
-            labelColor: Color(0xFF0F172A), // Culoarea tab-ului activ
-            unselectedLabelColor: Colors.black54, // Culoarea tab-ului inactiv
-            indicatorColor: Color(0xFF0F172A), // Linia de dedesubt
+            labelColor: Color(0xFF0F172A),
+            unselectedLabelColor: Colors.black54,
+            indicatorColor: Color(0xFF0F172A),
             indicatorWeight: 3,
             tabs: [
               Tab(text: 'Utilizatori'),

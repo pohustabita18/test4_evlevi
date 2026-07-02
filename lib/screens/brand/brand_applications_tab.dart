@@ -11,7 +11,6 @@ class BrandApplicationsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Fundalul se preia automat ca Baby Blue din main.dart
       body: StreamBuilder<QuerySnapshot>(
         stream: _dbService.getBrandCampaigns(uid),
         builder: (context, snapshot) {

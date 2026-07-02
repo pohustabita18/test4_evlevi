@@ -40,7 +40,6 @@ class NetCreatorApp extends StatelessWidget {
         brightness: Brightness.light,
         primaryColor: const Color(0xFF0F172A),
         scaffoldBackgroundColor: const Color(0xFFD2E6FF), //
-        // Stilul barei de sus (AppBar)
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFFD2E6FF),
           foregroundColor: Color(0xFF0F172A),
